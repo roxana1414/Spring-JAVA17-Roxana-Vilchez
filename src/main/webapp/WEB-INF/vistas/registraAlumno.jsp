@@ -17,8 +17,47 @@
 <div class="container">
 <h1>Registra Alumno</h1>
 
-	<form id="id_form"> 
+	<form id="id_form" method="POST"> 
+			<div class="row" style="margin-top: 5%">
+				<div class="form-group col-sm-6">
+					<div class="col-sm-4">
+						<label class="control-label" for="id_nombre">Nombre</label>
+					</div>						
+					<div class="col-sm-8">
+						<input class="form-control" type="text" id="id_nombre" name="nombre" placeholder="Ingrese el nombre" maxlength="40">
+					</div>	
+				</div>
+				<div class="form-group col-sm-6">
+					 <div class="col-sm-4">
+						<label class="control-label" for="id_dni">DNI</label>
+					</div>
+					<div class="col-sm-6">
+								<input class="form-control" type="text" id="id_dni" name="dni" placeholder="Ingrese el dni" maxlength="8">
+					</div>
+				</div>
+			</div>
+			<div class="row" style="margin-top: 0%">
+					<div class="form-group col-sm-6">
+						<div class="col-sm-4">
+							<label class="control-label" for="id_correo">Correo</label>
+						</div>
+						<div class="col-sm-8">
+							<input class="form-control" type="text" id="id_correo" name="correo" placeholder="Ingrese el correo" maxlength="100">
+						</div>
+					</div>
+						<div class="form-group  col-sm-6">
+							<div class="col-sm-4">
+								<label class="control-label" for="id_fecha">Fecha de Nacimiento</label>
+							</div>
+							<div class="col-sm-6">
+								<input class="form-control" type="date" id="id_fecha" name="fechaNacimiento" placeholder="Ingrese la fecha" maxlength="100">
+					 		</div>
+						</div>
+			</div>
 		
+			<div class="row" style="margin-top: 2%" align="center"	>
+					<button id="id_registrar" type="button" class="btn btn-primary" >Crea Alumno</button>
+			</div>	
 	</form>
 </div>
 
@@ -26,9 +65,28 @@
 
 $("#id_registrar").click(function (){ 
 	
+	//Lanza la validacion
+	var validator = $('#id_form').data('bootstrapValidator');
+    validator.validate();
+    
+    if (validator.isValid()){
+    	$.ajax({
+    		type: "POST",
+            url: "registraAlumno", 
+            data: $('#id_form').serialize(),
+            success: function(data){
+            	mostrarMensaje(data.mensaje);
+            	limpiarFormulario();
+            	validator.resetForm();
+            },
+            error: function(){
 
+            }
+    	});
+    }
+    	
+	
 });
-
 
 function limpiar(){
 	$('#id_nombre').val('');
@@ -57,6 +115,11 @@ $(document).ready(function() {
                             max: 40,
                             message: 'El nombre es de 3 a 40 caracteres'
                         },
+                        remote :{
+                        	delay	:1000,
+                       		url		:'buscaAlumnoPorNombre',
+                        	message	:'El nombre ya existe',
+                        }
                     }
                 },
                 dni:{
@@ -67,7 +130,12 @@ $(document).ready(function() {
                         },
                         regexp: {
                             regexp: /^[0-9]{8}$/,
-                            message: 'el dni es 8 dígitos'
+                            message: 'el dni es 8 dï¿½gitos'
+                        },
+                        remote :{
+                        	delay	:1000,
+                       		url		:'buscaAlumnoPorDni',
+                        	message	:'El dni ya existe',
                         }
                     }
                 },
